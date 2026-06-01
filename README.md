@@ -1,47 +1,77 @@
-# FastAPI Customer Service
+# Customer API
 
-A simple REST API built with FastAPI for managing customers.
+A secure RESTful Customer Management API built with FastAPI. This application provides CRUD (Create, Read, Update, Delete) operations for customer records and protects endpoints using API Key authentication.
 
 ## Features
 
-- Create customers
-- Retrieve customer details
-- Update customer information
-- Delete customers
-- Automatic API documentation
-- Data validation using Pydantic
+* FastAPI-based REST API
+* API Key Security
+* Customer CRUD Operations
+* Request Validation using Pydantic
+* Email Validation
+* Interactive Swagger Documentation
+* OpenAPI Specification Support
+* Proper HTTP Status Codes and Error Handling
 
-## Requirements
+---
 
-- Python 3.11+
-- FastAPI
-- Uvicorn
+## Technology Stack
 
+* Python 3.10+
+* FastAPI
+* Uvicorn
+* Pydantic
 
+---
 
-### Create Virtual Environment
+## Project Structure
 
-Using uv:
+```text
+project/
+│
+├── main.py
+├── README.md
+└── requirements.txt
+```
+
+---
+
+## Installation
+
+### Clone the Repository
 
 ```bash
-uv venv
-source .venv/bin/activate   # macOS/Linux
+git clone https://github.com/yourusername/customer-api.git
+cd customer-api
+```
 
-# Windows
+### Create a Virtual Environment
+
+```bash
+python -m venv .venv
+```
+
+### Activate the Virtual Environment
+
+#### Linux / macOS
+
+```bash
+source .venv/bin/activate
+```
+
+#### Windows
+
+```cmd
 .venv\Scripts\activate
 ```
 
 ### Install Dependencies
 
 ```bash
-uv sync
+pip install fastapi uvicorn email-validator
 ```
 
-or
-
-```bash
-uv pip install -r requirements.txt
-```
+---
 
 ## Running the Application
 
@@ -51,11 +81,13 @@ Start the FastAPI server:
 uvicorn main:app --reload
 ```
 
-The application will be available at:
+Server starts on:
 
 ```text
 http://127.0.0.1:8000
 ```
+
+---
 
 ## API Documentation
 
@@ -63,48 +95,89 @@ FastAPI automatically generates interactive API documentation.
 
 ### Swagger UI
 
-Open:
-
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-Features:
-
-- View all available endpoints
-- Execute API requests directly from the browser
-- Inspect request and response schemas
-- Test authentication (if configured)
-
 ### ReDoc
-
-Open:
 
 ```text
 http://127.0.0.1:8000/redoc
 ```
 
-Features:
+---
 
-- Clean, readable API documentation
-- Detailed schema descriptions
-- API reference for developers
+## Security
 
-## Example Endpoints
+The API uses API Key authentication.
 
-### Create Customer
+### API Key Header
 
 ```http
-POST /customers
+X-API-Key: my-secret-api-key
 ```
 
-Request Body:
+All customer endpoints require this header.
+
+Example:
+
+```bash
+curl -H "X-API-Key: my-secret-api-key" \
+http://127.0.0.1:8000/customers/
+```
+
+---
+
+## API Endpoints
+
+### Health Check
+
+#### GET /
+
+Returns application status.
+
+Response:
 
 ```json
 {
-  "name": "John Doe",
-  "email": "john.doe@example.com"
+  "message": "Customer API is running"
 }
+```
+
+---
+
+### Get All Customers
+
+#### GET /customers/
+
+Headers:
+
+```http
+X-API-Key: my-secret-api-key
+```
+
+Response:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com"
+  }
+]
+```
+
+---
+
+### Get Customer By ID
+
+#### GET /customers/{customer_id}
+
+Example:
+
+```bash
+GET /customers/1
 ```
 
 Response:
@@ -113,37 +186,180 @@ Response:
 {
   "id": 1,
   "name": "John Doe",
-  "email": "john.doe@example.com"
+  "email": "john@example.com"
 }
 ```
 
-### Get Customer
+---
 
-```http
-GET /customers/{customer_id}
+### Create Customer
+
+#### POST /customers/
+
+Request Body:
+
+```json
+{
+  "id": 1,
+  "name": "John Doe",
+  "email": "john@example.com"
+}
 ```
 
-Example:
+Response:
 
-```http
-GET /customers/1
+```json
+{
+  "message": "Customer created successfully"
+}
 ```
 
+---
 
-## Development
+### Update Customer
 
-Run the application in development mode:
+#### PUT /customers/{customer_id}
+
+Request Body:
+
+```json
+{
+  "id": 1,
+  "name": "John Smith",
+  "email": "johnsmith@example.com"
+}
+```
+
+Response:
+
+```json
+{
+  "message": "Customer updated successfully"
+}
+```
+
+---
+
+### Delete Customer
+
+#### DELETE /customers/{customer_id}
+
+Response:
+
+```json
+{
+  "message": "Customer deleted successfully"
+}
+```
+
+---
+
+## Customer Model
+
+```json
+{
+  "id": 1,
+  "name": "John Doe",
+  "email": "john@example.com"
+}
+```
+
+Field Description:
+
+| Field | Type    | Description                |
+| ----- | ------- | -------------------------- |
+| id    | Integer | Unique customer identifier |
+| name  | String  | Customer name              |
+| email | String  | Valid email address        |
+
+---
+
+## Error Responses
+
+### Invalid API Key
+
+```json
+{
+  "detail": "Invalid or missing API Key"
+}
+```
+
+Status Code:
+
+```text
+401 Unauthorized
+```
+
+### Customer Not Found
+
+```json
+{
+  "detail": "Customer not found"
+}
+```
+
+Status Code:
+
+```text
+404 Not Found
+```
+
+### Duplicate Customer ID
+
+```json
+{
+  "detail": "Customer ID already exists"
+}
+```
+
+Status Code:
+
+```text
+409 Conflict
+```
+
+---
+
+## Example cURL Commands
+
+### Create Customer
 
 ```bash
-uvicorn main:app --reload
+curl -X POST "http://127.0.0.1:8000/customers/" \
+-H "Content-Type: application/json" \
+-H "X-API-Key: my-secret-api-key" \
+-d '{
+  "id": 1,
+  "name": "John Doe",
+  "email": "john@example.com"
+}'
 ```
 
-Run tests:
+### Get All Customers
 
 ```bash
-pytest
+curl -X GET "http://127.0.0.1:8000/customers/" \
+-H "X-API-Key: my-secret-api-key"
 ```
+
+### Delete Customer
+
+```bash
+curl -X DELETE "http://127.0.0.1:8000/customers/1" \
+-H "X-API-Key: my-secret-api-key"
+```
+
+---
+
+## Notes
+
+* Data is stored in an in-memory list.
+* All data will be lost when the application restarts.
+* For production use, replace the in-memory storage with a database such as PostgreSQL, MySQL, or MongoDB.
+* Store API keys in environment variables instead of hardcoding them.
+
+---
 
 ## License
 
-MIT License
+This project is provided for educational and demonstration purposes.
