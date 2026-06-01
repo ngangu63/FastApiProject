@@ -17,14 +17,7 @@ A simple REST API built with FastAPI for managing customers.
 - FastAPI
 - Uvicorn
 
-## Installation
 
-### Clone the Repository
-
-```bash
-git clone https://github.com/<your-username>/<your-repository>.git
-cd <your-repository>
-```
 
 ### Create Virtual Environment
 
