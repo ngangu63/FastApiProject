@@ -129,20 +129,6 @@ Example:
 GET /customers/1
 ```
 
-## Project Structure
-
-```text
-.
-├── main.py
-├── models.py
-├── schemas.py
-├── routers/
-│   └── customers.py
-├── services/
-│   └── customer_service.py
-├── pyproject.toml
-└── README.md
-```
 
 ## Development
 
